@@ -2,6 +2,7 @@ require('dotenv').config();
 const { Telegraf, Scenes, session } = require('telegraf');
 const mongoose = require('mongoose');
 const cron = require('node-cron');
+const http = require('http');
 
 const startHandler = require('./handlers/start');
 const budgetHandler = require('./handlers/budget');
@@ -62,6 +63,21 @@ cron.schedule('0 20 * * *', async () => {
     } catch (err) {
         console.error('Error in cron job:', err);
     }
+});
+
+const server = http.createServer((req, res) => {
+  // Устанавливаем заголовки ответа
+  res.writeHead(200, { 'Content-Type': 'text/plain; charset=utf-8' });
+  
+  // Обрабатываем разные маршруты
+  if (req.url === '/ping' && req.method === 'GET') {
+    res.end('I am alive');
+  }
+});
+
+const PORT = 3000;
+server.listen(PORT, () => {
+  console.log(`Сервер запущен на http://localhost:${PORT}`);
 });
 
 bot.launch();
